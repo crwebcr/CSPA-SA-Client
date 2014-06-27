@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Seasonal adjustment</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<link href="img/jdemetra.ico" rel="icon"/>
+<script type="text/JavaScript" src="jquery-1.11.1.min.js"></script> 
+<script type="text/JavaScript" src="jquery.csv-0.71.min.js"></script>
+<script type="text/JavaScript" src="d3.v3.min.js"></script>
+</head>
+<body>
+
+<div id="titleframe"><div id="title">Seasonal adjustment</div></div>
+
+<div id="mask"><div id="mask2">Loading ...</div></div>
+
+<div id="frame">
+<div id="specTitle" class="subTitle">&gt; Specifications</div>
+
+<div id="method"><table><tr>
+	<td>Method : &nbsp;</td>
+	<td><select id='methodSelect' onChange="javascript:changeMethod();">
+		<option value='ts' selected>Tramoseats</option>
+		<option value='x13'>X13</option>
+	</select></td> 
+</tr></table></div>
+
+<div id="prespec"><table><tr>
+	<td>Default specification : &nbsp;</td>
+	<td><select id='prespecSelect' onChange="javascript:changePrespec();">
+		<option value='RSA0'>RSA0</option>
+		<option value='RSA1'>RSA1</option>
+		<option value='RSA2'>RSA2</option>
+		<option value='RSA3'>RSA3</option>
+		<option value='RSA4'>RSA4</option>
+		<option value='RSA5'>RSA5</option>
+	</select></td> 
+</tr></table></div>
+
+<div id="tabSpec"><table class="tabs"><tr>
+	<td><ul id="spec1" class="tabPassive"><li><a href="javascript:spec(1);" title="sets transformation">Transformation</a></li></ul></td>
+	<td><ul id="spec2" class="tabPassive"><li><a href="javascript:spec(2);" title="sets model">Model</a></li></ul></td>
+	<td><ul id="spec3" class="tabPassive"><li><a href="javascript:spec(3);" title="sets outliers">Outliers</a></li></ul></td>
+	<td><ul id="spec4" class="tabPassive"><li><a href="javascript:spec(4);" title="sets calendar">Calendar</a></li></ul></td>
+	<td><ul id="spec5" class="tabPassive"><li><a href="javascript:spec(5);" title="selects outputs">Outputs</a></li></ul></td>
+</tr></table></div>
+
+<div id='ts1' class='parameters'>
+  <div id='tstransform'><table><tr title="None: no transformation of data; Log: takes log of data; Auto: the program tests for the log-level specification">
+	<td> Function : &nbsp;</td>
+    <td> <select id='ts_transformSpec'>
+      <option value='level' selected='selected'>None</option>
+      <option value='log'>Log</option>
+      <option value='auto'>Auto</option>
+    </select></td>
+  </tr></table></div>
+</div>
+
+<div id='ts2' class='parameters'>
+  <div id='tsautoModel'><table><tr title="enables auto-modeling">
+	<td onclick="javascript:check(this); changeAutoModel('ts');"> Automatic : </td>
+    <td> <input type="checkbox" id="ts_autoModelSpec" onChange="javascript:changeAutoModel('ts');"></td>
+  </tr></table></div>
+  <div id='tsarima'>
+    <div id='tsarima1'><table>
+      <tr title="regular auto-regressive order"><td>p : &nbsp;</td> <td><input type="text" id="ts_arimaSpec_spec_p" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'ts','p');"></td></tr>
+      <tr title="regular differencing order"><td>d : &nbsp;</td> <td><input type="text" id="ts_arimaSpec_spec_d" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'ts','d');"></td></tr>
+      <tr title="regular moving average order"><td>q : &nbsp;</td> <td><input type="text" id="ts_arimaSpec_spec_q" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'ts','q');"></td></tr>
+    </table></div>
+    <div id='tsarima2'><table>
+      <tr title="seasonal auto-regressive order"><td>bp : &nbsp;</td> <td><input type="text" id="ts_arimaSpec_spec_bp" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'ts','bp');"></td></tr>
+      <tr title="seasonal differencing order"><td>bd : &nbsp;</td> <td><input type="text" id="ts_arimaSpec_spec_bd" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'ts','bd');"></td></tr>
+      <tr title="seasonal moving average order"><td>bq : &nbsp;</td> <td><input type="text" id="ts_arimaSpec_spec_bq" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'ts','bq');"></td></tr>
+    </table></div>
+    <div id='tsarima3'><table><tr title="mean correction">
+      <td onclick="javascript:check(this);"> Mean : </td> <td> <input type="checkbox" id="ts_arimaSpec_spec_mean" value="true"></td>
+    </tr></table></div>
+  </div>
+</div>
+
+<div id="ts3" class="parameters">
+  <div id='tsoutlier'><table id="ts_outlierSpec_types">
+    <tr title="additive outlier"><td onclick="javascript:check(this);"> Additive : </td> <td><input type="checkbox" value="AO"></td></tr>
+    <tr title="level shift"><td onclick="javascript:check(this);"> Level shift : </td> <td><input type="checkbox" value="LS"></td></tr>
+    <tr title="transitory change"><td onclick="javascript:check(this);"> Transitory : </td> <td><input type="checkbox" value="TC"></td></tr> 
+  </table></div>
+</div>
+
+<div id="ts4" class="parameters">
+  <div id='tscaloption'><table><tr title="selects trading days option">
+    <td>Calendar : &nbsp;</td>
+    <td><select id='ts_calendarSpec_tradingDays' onChange="javascript:changeCalendarOption('ts');">
+      <option value='none' selected='selected'>None</option>
+      <option value='exist'>Default</option>
+    </select></td>
+  </tr></table></div>
+  <div id='tscaldetail'><table>
+    <tr title="selects regressors for trading days"><td>Regressors : &nbsp;</td>
+      <td><select id="ts_calendarSpec_tradingDays_tdOption">
+        <option value='TradingDays' selected='selected'>Trading days</option>
+        <option value='WorkingDays'>Working days</option>
+      </select></td>
+    </tr>
+    <tr title="uses leap year regression variable"><td onclick="javascript:check(this);">Leap year :</td> <td><input type="checkbox" id="ts_calendarSpec_tradingDays_lpOption" value="LeapYear"></td></tr>
+    <tr title="performs test"><td onclick="javascript:check(this);">Pretest :</td> <td><input type="checkbox" id="ts_calendarSpec_tradingDays_testType" value="Separate_T"></td></tr> 
+  </table></div>
+  <div id='tseastoption'><table><tr title="selects Easter effect option">
+    <td>Easter : &nbsp;</td>
+    <td><select id='ts_calendarSpec_movingHolidays_easter' onChange="javascript:changeEasterOption('ts');">
+      <option value='none' selected='selected'>None</option>
+      <option value='exist'>In use</option>
+    </select></td>
+  </tr></table></div> 
+  <div id='tseastdetail'><table>
+    <tr title="length in days of the Easter effect"><td>Duration : &nbsp;</td> <td><input type="text" id="ts_calendarSpec_movingHolidays_easter_duration" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'ts','duration');"></td></tr>
+    <tr title="performs test"><td onclick="javascript:check(this);">Pretest :</td> <td><input type="checkbox" id="ts_calendarSpec_movingHolidays_easter_pretest" value="true"></td></tr> 
+  </table></div>
+</div>
+
+<div id="ts5" class="parameters"><div id="ts_OutputFilter">
+  <div id='tsoutput1'><table>
+    <tr title="seasonally adjusted series"><td><input type="checkbox" value="sa" checked="checked"></td> <td onclick="javascript:check(this);"> Seasonally adjusted series </td></tr>
+  	<tr title="likelihood statistics"><td><input type="checkbox" value="likelihood" checked="checked"></td> <td onclick="javascript:check(this);"> Likelihood statistics </td></tr>
+  	<tr style="display:none"><td><input type="checkbox" value="y" checked="checked"></td> <td> Original series </td></tr>
+  </table></div>
+  <div id='tsoutput2'><table>
+    <tr title="final trend component"><td><input type="checkbox" value="t" checked="checked"></td> <td onclick="javascript:check(this);"> Trend component </td> </tr>  	
+    <tr title="determistic component"><td><input type="checkbox" value="det"></td> <td onclick="javascript:check(this);"> Determistic component </td> </tr>
+  </table></div>  
+  <div id='tsoutput3'><table>
+    <tr title="seasonal component"><td><input type="checkbox" value="s"></td> <td onclick="javascript:check(this);"> Seasonal component </td> </tr>
+    <tr title="irregular component"><td><input type="checkbox" value="i"></td> <td onclick="javascript:check(this);"> Irregular component </td> </tr>
+  </table></div>
+  <div id='tsoutput4'><table>
+    <tr title="easter effect"><td><input type="checkbox" value="ee"></td> <td onclick="javascript:check(this);"> Easter effect </td> </tr>
+    <tr title="trading days effect"><td><input type="checkbox" value="tde"></td> <td onclick="javascript:check(this);"> Trading days effect </td> </tr>
+    <tr title="moving holidays effect"><td><input type="checkbox" value="mhe"></td> <td onclick="javascript:check(this);"> Moving holidays effect </td> </tr>
+  </table></div>
+  <div id='tsoutput5'><table>
+    <tr title="calendar effect"><td><input type="checkbox" value="cal"></td> <td onclick="javascript:check(this);"> Calendar effect </td> </tr>
+    <tr title="total regression effect"><td><input type="checkbox" value="reg"></td> <td onclick="javascript:check(this);"> Regression effect </td> </tr>
+    <tr title="total outliers effect"><td><input type="checkbox" value="out"></td> <td onclick="javascript:check(this);"> Outliers effect </td> </tr>
+  </table></div>
+</div></div>
+
+<div id="x131" class="parameters">
+  <div id='x13transform'><table><tr title="None: no transformation of data; Log: takes log of data; Auto: the program tests for the log-level specification">
+	<td> Function : &nbsp;</td>
+    <td> <select id='x13_transformSpec'>
+      <option value='level' selected='selected'>None</option>
+      <option value='log'>Log</option>
+      <option value='auto'>Auto</option>
+    </select></td>
+  </tr></table></div>
+</div>
+
+<div id='x132' class='parameters'>
+  <div id='x13autoModel'><table><tr title="enables auto-modeling">
+	<td> Automatic : </td>
+    <td> <input type="checkbox" id="x13_autoModelSpec" onChange="javascript:changeAutoModel('x13');"></td>
+  </tr></table></div>
+  <div id='x13arima'>
+    <div id='x13arima1'><table>
+      <tr title="regular auto-regressive order"><td>p : &nbsp;</td> <td><input type="text" id="x13_arimaSpec_spec_p" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'x13','p');"></td></tr>
+      <tr title="regular differencing order"><td>d : &nbsp;</td> <td><input type="text" id="x13_arimaSpec_spec_d" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'x13','d');"></td></tr>
+      <tr title="regular moving average order"><td>q : &nbsp;</td> <td><input type="text" id="x13_arimaSpec_spec_q" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'x13','q');"></td></tr>
+    </table></div>
+    <div id='x13arima2'><table>
+      <tr title="seasonal auto-regressive order"><td>bp : &nbsp;</td> <td><input type="text" id="x13_arimaSpec_spec_bp" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'x13','bp');"></td></tr>
+      <tr title="seasonal differencing order"><td>bd : &nbsp;</td> <td><input type="text" id="x13_arimaSpec_spec_bd" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'x13','bd');"></td></tr>
+      <tr title="seasonal moving average order"><td>bq : &nbsp;</td> <td><input type="text" id="x13_arimaSpec_spec_bq" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'x13','bq');"></td></tr>
+    </table></div>
+    <div id='x13arima3'><table><tr title="mean correction">
+      <td> Mean : </td>
+      <td> <input type="checkbox" id="x13_arimaSpec_spec_mean" value="true"></td>
+    </tr></table></div>
+  </div>
+</div>
+
+<div id="x133" class="parameters">
+  <div id='tsoutlier'><table id="x13_outlierSpec_type_outlier_type">
+    <tr title="additive outlier"><td> Additive : </td> <td><input type="checkbox" value="AO"></td></tr>
+    <tr title="level shift"><td> Level shift : </td> <td><input type="checkbox" value="LS"></td></tr>
+    <tr title="transitory change"><td> Transitory : </td> <td><input type="checkbox" value="TC"></td></tr> 
+  </table></div>
+</div>
+
+<div id="x134" class="parameters">
+  <div id='x13caloption'><table><tr title="selects trading days option">
+    <td>Calendar : &nbsp;</td>
+    <td><select id='x13_calendarSpec_tdVariables' onChange="javascript:changeCalendarOption('x13');">
+      <option value='none' selected='selected'>None</option>
+      <option value='exist'>Default</option>
+    </select></td>
+  </tr></table></div>
+  <div id='x13caldetail'><table>
+    <tr title="selects regressors for trading days"><td>Regressors : &nbsp;</td>
+      <td><select id="x13_calendarSpec_tdVariables_td">
+        <option value='true' selected='selected'>Trading days</option>
+        <option value='false'>Working days</option>
+      </select></td>
+    </tr>
+    <tr title="uses leap year regression variable"><td>Leap year :</td> <td><input type="checkbox" id="x13_calendarSpec_tdVariables_lp" value="true"></td></tr>
+    <tr title="performs test"><td>Pretest :</td> <td><input type="checkbox" id="x13_calendarSpec_tdVariables_aicTest" value="Remove"></td></tr> 
+  </table></div>
+  <div id='x13eastoption'><table><tr title="selects Easter effect option">
+    <td>Easter : &nbsp;</td>
+    <td><select id='x13_calendarSpec_movingHolidaySpec_movingHolidaySpecType' onChange="javascript:changeEasterOption('x13');">
+      <option value='none' selected='selected'>None</option>
+      <option value='exist'>In use</option>
+    </select></td>
+  </tr></table></div> 
+  <div id='x13eastdetail'><table>
+    <tr title="length in days of the Easter effect"><td>Duration : &nbsp;</td> <td><input type="text" id="x13_calendarSpec_movingHolidaySpec_movingHolidaySpecType_w" onfocus="javascript:saveValue(this);" onblur="javascript:testRange(this,'x13','duration');"></td></tr>
+    <tr title="performs test"><td>Pretest :</td> <td><input type="checkbox" id="x13_calendarSpec_movingHolidaySpec_movingHolidaySpecType_aicTest" value="Add"></td></tr> 
+  </table></div>
+</div>
+
+<div id="x135" class="parameters"><div id="x13_OutputFilter">
+ <div id='x13output1'><table>
+    <tr title="seasonally adjusted series"><td><input type="checkbox" value="sa" checked="checked"></td> <td onclick="javascript:check(this);"> Seasonally adjusted series </td></tr>
+  	<tr title="likelihood statistics"><td><input type="checkbox" value="likelihood" checked="checked"></td> <td onclick="javascript:check(this);"> Likelihood statistics </td></tr>
+  	<tr style="display:none"><td><input type="checkbox" value="y" checked="checked"></td> <td> Original series </td></tr>
+  </table></div>
+  <div id='x13output2'><table>
+    <tr title="final trend component"><td><input type="checkbox" value="t" checked="checked"></td> <td onclick="javascript:check(this);"> Trend component </td> </tr>  	
+    <tr title="determistic component"><td><input type="checkbox" value="det"></td> <td onclick="javascript:check(this);"> Determistic component </td> </tr>
+  </table></div>  
+  <div id='x13output3'><table>
+    <tr title="seasonal component"><td><input type="checkbox" value="s"></td> <td onclick="javascript:check(this);"> Seasonal component </td> </tr>
+    <tr title="irregular component"><td><input type="checkbox" value="i"></td> <td onclick="javascript:check(this);"> Irregular component </td> </tr>
+  </table></div>
+  <div id='x13output4'><table>
+    <tr title="easter effect"><td><input type="checkbox" value="ee"></td> <td onclick="javascript:check(this);"> Easter effect </td> </tr>
+    <tr title="trading days effect"><td><input type="checkbox" value="tde"></td> <td onclick="javascript:check(this);"> Trading days effect </td> </tr>
+    <tr title="moving holidays effect"><td><input type="checkbox" value="mhe"></td> <td onclick="javascript:check(this);"> Moving holidays effect </td> </tr>
+  </table></div>
+  <div id='x13output5'><table>
+    <tr title="calendar effect"><td><input type="checkbox" value="cal"></td> <td onclick="javascript:check(this);"> Calendar effect </td> </tr>
+    <tr title="total regression effect"><td><input type="checkbox" value="reg"></td> <td onclick="javascript:check(this);"> Regression effect </td> </tr>
+    <tr title="total outliers effect"><td><input type="checkbox" value="out"></td> <td onclick="javascript:check(this);"> Outliers effect </td> </tr>
+  </table></div>
+</div></div>
+
+<div id="seriesTitle" class="subTitle">&gt; Time series</div>
+<div id="loadSeries"> 
+	<input type = "button" value = "Select series" onclick ="javascript:selectSeries();"/>
+	<input type= "file" id="selectSeries" onChange="javascript:loadSeries();" class="inputFile"/>
+</div>
+<div id="loadSpinner"><img height="25px" width="25px" src="img/spinner.gif"/></div>
+<div id="loadName" onclick="javascript:showSeries();"></div>
+<div id="adjust"><input type = "button" value = "Seasonal adjust" onclick ="javascript:adjust();"/></div>
+<div id="adjustSpinner"><img height="25px" width="25px" src="img/spinner.gif"/></div>
+
+
+<div id="results">
+	<div id="resultsTitle" class="subTitle">&gt; Results</div>
+
+	<div id="tabResults"><table class="tabs"><tr>
+		<td><ul id="result1" class="tabPassive"><li><a href="javascript:result(1);" title="see adjusted and components series">Adjusted series</a></li></ul></td>
+		<td><ul id="result2" class="tabPassive"><li><a href="javascript:result(2);" title="see statistics">Statistics</a></li></ul></td>
+		<td><ul id="result3" class="tabPassive"><li><a href="javascript:result(3);" title="see effect series">Effects series</a></li></ul></td>
+	</tr></table></div>
+	<div id="res1"><div id="tabrs1"><table id="adjustedSeries" class="highlight">
+	</table></div></div>
+	<div id="res2"><div id="tabrs2"><table id="statistics" class="highlight">
+	</table></div></div>
+	<div id="res3"><div id="tabrs3"><table id="effectsSeries" class="highlight">
+	</table></div></div>
+</div>
+
+<div id="graph">
+	<div id="clean"><img src="img/clean.png" width="20px" height="20px" title="clean the graph zone" onclick="javascript:clean();"/></div>
+</div>
+
+<div id="likelihood" class="statistics">
+	<h2>Likelihood Statistics</h2>
+	Number of effective observations = <span id="likelihood_neffectiveobs"></span><br/>
+	Number of estimated parameters = <span id="likelihood_np"></span><br/> 
+	<br/>
+	Loglikelihood = <span id="likelihood_logvalue"></span><br/> 
+	Ajusted loglikelihood = <span id="likelihood_adjustedlogvalue"></span><br/> 
+	<br/>
+	Standard error of the regression (ML estimator) = <span id="likelihood_ssqerr"></span> <br/>
+	AIC = <span id="likelihood_aic"></span> <br/>
+	AICC = <span id="likelihood_aicc"></span> <br/>
+	BIC (corrected for length) = <span id="likelihood_bicc"></span><br/>
+</div>
+
+
+</div>
+
+<script type="text/JavaScript" src="scripts.js"></script> 
+</body>
+</html>
