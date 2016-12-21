@@ -9,10 +9,11 @@ import { METHODS, PRESPECS } from '../constants'
 export default class Root extends Component {
   constructor() {
     super()
+    const method = METHODS[0]
     this.state = {
       spec: null,
-      method: METHODS[0],
-      prespec: PRESPECS[0],
+      method,
+      prespec: PRESPECS[method][0],
       prespecs: null
     }
     this.changeSpec = spec => this.setState({ spec })

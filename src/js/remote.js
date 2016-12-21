@@ -7,19 +7,22 @@ import { serverURL } from './config'
 export const loadPrespecs = () => {
   const specs = { x13: {}, ts: {} }
   const requests = METHODS.reduce((_, method) => 
-    _.concat(PRESPECS.map(prespec => loadPrespec(method, prespec, specs))), [])
+    _.concat(PRESPECS[method].map(prespec => loadPrespec(method, prespec, specs))), [])
   return Promise.all(requests)
     .then(rslt => specs)
 }
 
-const loadPrespec = (method, prespec, prespecs) =>
-  fetch(`${serverURL}/sas/${method}/${prespec}`, {
+const loadPrespec = (method, prespec, prespecs) => {
+  const methodInURL = method === 'x13' ? 'x13' : 'tramoseats'
+  return fetch(`${serverURL}/${methodInURL}/${prespec}`, {
     headers: {
       Accept: 'application/json'
     }
   })
   .then(res => res.json())
   .then(spec => prespecs[method][prespec] = specToState(spec))
+  
+}
   
 export const loadResults = (method, spec, series) => 
   fetch(`${serverURL}/sas/${method}`, {

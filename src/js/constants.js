@@ -1,5 +1,8 @@
 export const METHODS = ['x13', 'ts']
-export const PRESPECS = ['RSA0', 'RSA1', 'RSA2', 'RSA3', 'RSA4', 'RSA5']
+export const PRESPECS = {
+	x13: ['RSA0', 'RSA1', 'RSA2c', 'RSA3', 'RSA4c', 'RSA5c'],
+	ts: ['RSA0', 'RSA1', 'RSA2', 'RSA3', 'RSA4', 'RSA5']
+}
 
 //tabs for specification details
 export const TRANSFORMATION = 'TRANSFORMATION'
