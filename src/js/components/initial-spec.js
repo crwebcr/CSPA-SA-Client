@@ -11,7 +11,7 @@ export default function InitialSpec(
       <MethodPicker method={method} methods={METHODS} onChange={changeMethod} />
       <PrespecPicker 
           prespec={prespec} 
-          prespecs={PRESPECS}
+          prespecs={PRESPECS[method]}
           onChange={changePrespec}/>
     </div>
   )
