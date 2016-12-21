@@ -33,7 +33,7 @@ function processOutlier(outlierSpec, method) {
   const defaultOutlier = { AO: false, LS: false, TC: false }
   if (method === 'ts') {
     return outlierSpec && outlierSpec.types ?
-      outlierSpec.types.split(/\s+/).reduce((_, name) => {
+      outlierSpec.types.reduce((_, name) => {
        _[name] = true
        return _
       }, {})
