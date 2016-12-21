@@ -31,7 +31,7 @@ const defaultArima = {
 
 function processOutlier(outlierSpec, method) {
   const defaultOutlier = { AO: false, LS: false, TC: false }
-  if (method === 'tramoseatsSpecType') {
+  if (method === 'ts') {
     return outlierSpec && outlierSpec.types ?
       outlierSpec.types.split(/\s+/).reduce((_, name) => {
        _[name] = true
@@ -39,7 +39,7 @@ function processOutlier(outlierSpec, method) {
       }, {})
       : defaultOutlier
   }
-  if (method === 'x13SpecType') {
+  if (method === 'x13') {
    return outlierSpec && outlierSpec.type && outlierSpec.type.outlier ?
     outlierSpec.type.outlier.reduce((_, { type }) => {
       _[type] = true
@@ -50,11 +50,11 @@ function processOutlier(outlierSpec, method) {
 }
  
 function processCalendar(calendarSpec, method) {
-  if (method === 'tramoseatsSpecType') return processCalendarTS(calendarSpec)
-  if (method === 'x13SpecType') return processCalendarX13(calendarSpec)
+  if (method === 'ts') return processCalendarTS(calendarSpec)
+  if (method === 'x13') return processCalendarX13(calendarSpec)
 }
 
-function processCalendarTS(calendarSpec, method) {
+function processCalendarTS(calendarSpec) {
   let cs = Object.assign({}, defaultCalendar)
   let easter
   if (calendarSpec) {
@@ -118,7 +118,7 @@ function processTransform(transformSpec) {
 }
 
 
-export function specToState(spec) {
+export function specToState(method, spec) {
   /*
    decompositionSpec: not used
    autoModelSpec: not used, when `arimaSpec` is missing
@@ -126,11 +126,11 @@ export function specToState(spec) {
   */
   
   return {
-    method: spec.type, 
+    method, 
     transformSpec: processTransform(spec.transformSpec),
     arimaSpec: processArima(spec.arimaSpec),
-    outlierSpec: processOutlier(spec.outlierSpec, spec.type),
-    calendarSpec: processCalendar(spec.calendarSpec, spec.type),
+    outlierSpec: processOutlier(spec.outlierSpec, method),
+    calendarSpec: processCalendar(spec.calendarSpec, method),
     outputFilter: defaultOutputFilter
   }
 }

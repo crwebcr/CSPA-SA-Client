@@ -20,7 +20,7 @@ const loadPrespec = (method, prespec, prespecs) => {
     }
   })
   .then(res => res.json())
-  .then(spec => prespecs[method][prespec] = specToState(spec))
+  .then(spec => prespecs[method][prespec] = specToState(method, spec))
   
 }
   
