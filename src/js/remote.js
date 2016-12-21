@@ -2,8 +2,7 @@ import fetch from 'isomorphic-fetch'
 import { METHODS, PRESPECS } from './constants'
 import { specToState } from './spec-to-state'
 import { stateToSpec } from './state-to-spec'
-// Server address
-var serverURL = 'http://localhost:8081/seasonal-adjustment-service'
+import { serverURL } from './config'
 
 export const loadPrespecs = () => {
   const specs = { x13: {}, ts: {} }
