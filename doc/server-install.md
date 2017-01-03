@@ -31,9 +31,9 @@ You will need an instance of [Jdemetra-ws](https://github.com/nbbrd/jdemetra-ws)
 
 ## Add CORS headers
 
-To make the client work, the header `Access-Control-Allow-Origin` should be set in the server responses (`*` makes things easy for during local tests).
+To make the client work, the header `Access-Control-Allow-Origin` should be set in the server responses (`*` make things easy for local tests).
 
-We didn't manage to add CORS headers with the instructions given in `doc/gettingstarted.md`. It might be because this kind of filter only works within Tomcat and we use the `standalone` version of the application. So instead, we added a filter with for [jersey](https://github.com/FranckCo/CSPA-SA/blob/07dd97906b849734614f65335bd40f5e0bd7a9eb/src/main/java/fr/insee/cspa/sa/config/CorsFilter.java).
+We didn't manage to add CORS headers with the instructions given in `doc/gettingstarted.md`. It might be because this kind of filter only works within Tomcat and we are using the `standalone` version of the application. So instead, we added a filter with [jersey](https://github.com/FranckCo/CSPA-SA/blob/07dd97906b849734614f65335bd40f5e0bd7a9eb/src/main/java/fr/insee/cspa/sa/config/CorsFilter.java).
 
 More precisely, we added the following file `/ws-commons/src/main/java/ec/nbb/ws/filters/CorsFilter.java`:
 
@@ -80,7 +80,7 @@ public class Main {
 
 ## Package the application (skip tests)
 
-One test does not pass but the application is working. So to run the application:
+One test does not pass but the application is working. So to package the application:
 
 ```
 mvn package -D skipTests
